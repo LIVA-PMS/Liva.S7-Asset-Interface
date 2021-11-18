@@ -1,0 +1,248 @@
+﻿<!DOCTYPE HTML>
+<html lang="de">
+<head>
+<!--    <meta content="5" http-equiv="refresh">-->
+    <title>LIVA Asset-Interface</title>
+    <style>
+        body {
+            font-family: Arial,sans-serif;
+        }
+        table, td, th {
+            border: 1px solid gray;
+            padding: .2em;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        select {
+            width: 100%;
+        }
+        select:disabled {
+            color: blue;
+            opacity: 1;
+            border-color: gray;
+        }
+        .RW {
+            color: blue;
+        }
+    </style>
+</head>
+
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].AssetId' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].AssetState' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].AlarmState' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].Consumption' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].Production' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].Temperature' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].CapacityLevel' -->
+<!-- AWP_In_Variable Name='"Asset-DB".AssetData[0].ControlState' -->
+
+<body>
+
+<form action="" method="post">
+
+    <h1>LIVA Asset-Interface</h1>
+
+    <h3>Verbindung</h3>
+    <p>
+        Status: <span id="ModbusState"></span>
+        <script type="text/javascript">
+            document.getElementById("ModbusState").innerText = parseInt(:="Asset-DB".ModbusState:).toString(16);
+        </script>
+    </p>
+
+    <h3>Datenpunkte</h3>
+
+    <table>
+        <tr>
+            <th>Adr</th>
+            <th>Name</th>
+            <th>Anzahl Register</th>
+            <th>Datentyp</th>
+            <th>Datenformat</th>
+            <th>Wertebereich</th>
+            <th>Aktueller Wert</th>
+            <th>Einheit</th>
+            <th>Zugriff</th>
+            <th>Beschreibung</th>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>AssetId</td>
+            <td>1</td>
+            <td>U16</td>
+            <td>RAW</td>
+            <td>1..n</td>
+            <td><input name='"Asset-DB".AssetData[0].AssetId' type="text" value=':="Asset-DB".AssetData[0].AssetId:'></td>
+            <td></td>
+            <td>RO</td>
+            <td>Eindeutige ID des Assets aus der Konfiguration</td>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>AssetState</td>
+            <td>1</td>
+            <td>U16</td>
+            <td>ENUM</td>
+            <td>0..7</td>
+            <td>
+                <select id="AssetState" name='"Asset-DB".AssetData[0].AssetState' value=':="Asset-DB".AssetData[0].AssetState:'>
+                    <option value="0">Unknown</option>
+                    <option value="1">Startup</option>
+                    <option value="2">Shutdown</option>
+                    <option value="3">Manual</option>
+                    <option value="4">Operational</option>
+                    <option value="5">Warning</option>
+                    <option value="6">Failure</option>
+                    <option value="7">Maintenance</option>
+                </select>
+                <script type="text/javascript">
+                    document.getElementById("AssetState").selectedIndex = :="Asset-DB".AssetData[0].AssetState:;
+                </script>
+            </td>
+            <td></td>
+            <td>RO</td>
+            <td>Betriebszustand des Assets</td>
+        </tr>
+        <tr>
+            <td>2</td>
+            <td>AlarmState</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FLAGS</td>
+            <td></td>
+            <td><input name='"Asset-DB".AssetData[0].AlarmState' type="text" value=':="Asset-DB".AssetData[0].AlarmState:'></td>
+            <td></td>
+            <td>RO</td>
+            <td>Meldungen / Alarme des Assets (Bitcodiert)</td>
+        </tr>
+        <tr>
+            <td>4</td>
+            <td>Consumption</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FIX0</td>
+            <td>0..</td>
+            <td><input name='"Asset-DB".AssetData[0].Consumption' type="text" value=':="Asset-DB".AssetData[0].Consumption:'></td>
+            <td>W</td>
+            <td>RO</td>
+            <td>Momentane Leistungsaufnahme (laden / Verbrauch)</td>
+        </tr>
+        <tr>
+            <td>6</td>
+            <td>Production</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FIX0</td>
+            <td>0..</td>
+            <td><input name='"Asset-DB".AssetData[0].Production' type="text" value=':="Asset-DB".AssetData[0].Production:'></td>
+            <td>W</td>
+            <td>RO</td>
+            <td>Momentane Leistungsabgabe (entladen / Einspeisung)</td>
+        </tr>
+        <tr>
+            <td>8</td>
+            <td>Temperature</td>
+            <td>1</td>
+            <td>S16</td>
+            <td>FIX1</td>
+            <td>-1000 .. 1000</td>
+            <td><input name='"Asset-DB".AssetData[0].Temperature' type="text" value=':="Asset-DB".AssetData[0].Temperature:'></td>
+            <td><sup>1</sup>/<sub>10</sub> °C</td>
+            <td>RO</td>
+            <td>Interne Maximaltemperatur</td>
+        </tr>
+        <tr>
+            <td>9</td>
+            <td>CapacityLevel</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FIX0</td>
+            <td>0..</td>
+            <td><input name='"Asset-DB".AssetData[0].CapacityLevel' type="text" value=':="Asset-DB".AssetData[0].CapacityLevel:'></td>
+            <td>Wh</td>
+            <td>RO</td>
+            <td>Effektiver Ladezustand (SoC) des Assets</td>
+        </tr>
+        <tr>
+            <td>11</td>
+            <td>ControlState</td>
+            <td>1</td>
+            <td>U16</td>
+            <td>ENUM</td>
+            <td>0..4</td>
+            <td>
+                <select id="ControlState" name='"Asset-DB".AssetData[0].ControlState' value=':="Asset-DB".AssetData[0].ControlState:'>
+                    <option value="0">Idle</option>
+                    <option value="1">InProgress</option>
+                    <option value="2">Completed</option>
+                    <option value="3">Failure</option>
+                    <option value="4">Impossible</option>
+                </select>
+                <script type="text/javascript">
+                    document.getElementById("ControlState").selectedIndex = :="Asset-DB".AssetData[0].ControlState:;
+                </script>
+            </td>
+            <td></td>
+            <td>RO</td>
+            <td>Steuerungszustand</td>
+        </tr>
+        <tr>
+            <td>12</td>
+            <td>ControlActivation</td>
+            <td>1</td>
+            <td>U16</td>
+            <td>ENUM</td>
+            <td>0..2</td>
+            <td>
+                <select id="ControlActivation" name='"Asset-DB".AssetData[0].ControlActivation' value=':="Asset-DB".AssetData[0].ControlActivation:' disabled>
+                    <option value="0">Inactive</option>
+                    <option value="1">Active</option>
+                    <option value="2">Prepare</option>
+                </select>
+                <script type="text/javascript">
+                    document.getElementById("ControlActivation").selectedIndex = :="Asset-DB".AssetData[0].ControlActivation:;
+                </script>
+            </td>
+            <td></td>
+            <td>RW</td>
+            <td>Steuerungsvorgabe</td>
+        </tr>
+        <tr>
+            <td>13</td>
+            <td>SetConsume</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FIX0</td>
+            <td>0..</td>
+            <td><span class="RW">:="Asset-DB".AssetData[0].SetConsume:</span></td>
+            <td>W</td>
+            <td>RW</td>
+            <td>Vorgabe der Leistungsaufnahme (laden / Verbrauch)</td>
+        </tr>
+        <tr>
+            <td>15</td>
+            <td>SetProduce</td>
+            <td>2</td>
+            <td>U32</td>
+            <td>FIX0</td>
+            <td>0..</td>
+            <td><span class="RW">:="Asset-DB".AssetData[0].SetProduce:</span></td>
+            <td>W</td>
+            <td>RW</td>
+            <td>Vorgabe der Leistungsabgabe (entladen / Einspeisung)</td>
+        </tr>
+    </table>
+
+    <p>&nbsp;</p>
+    <p>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="button" value="Aktualisieren" onclick="location.reload()">
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" value="Übernehmen">
+    </p>
+
+</form>
+
+</body>
+</html>
